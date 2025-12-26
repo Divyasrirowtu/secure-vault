@@ -1,0 +1,15 @@
+version: "3.8"
+services:
+  blockchain:
+    image: ghcr.io/foundry-rs/anvil:latest
+    container_name: hardhat-node
+    ports:
+      - "8545:8545"
+
+  deployer:
+    build: ./docker
+    container_name: vault-deployer
+    depends_on:
+      - blockchain
+    environment:
+      RPC_URL: "http://blockchain:8545"
