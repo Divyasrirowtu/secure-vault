@@ -1,0 +1,33 @@
+{
+  "name": "secure-vault",
+  "version": "1.0.0",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Divyasrirowtu/secure-vault.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Divyasrirowtu/secure-vault/issues"
+  },
+  "homepage": "https://github.com/Divyasrirowtu/secure-vault#readme",
+  "description": "",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-ignition": "^3.0.6",
+    "@nomicfoundation/hardhat-toolbox-viem": "^5.0.1",
+    "@types/node": "^22.19.3",
+    "forge-std": "github:foundry-rs/forge-std#v1.9.4",
+    "hardhat": "^3.1.0",
+    "typescript": "~5.8.0",
+    "viem": "^2.43.3"
+  },
+  "type": "module"
+}
