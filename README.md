@@ -1,56 +1,192 @@
-# Secure Vault System
+SecureVault: Multi-Contract Authorization System
+Project Overview
 
-This project implements a **secure multi-contract vault system** on Ethereum using Hardhat.
+SecureVault is a decentralized system that separates fund custody and permission validation across multiple smart contracts.
 
-## Project Structure
+Vault Contract: Holds funds and executes withdrawals.
 
-contracts/ # Solidity contracts
-scripts/ # Deployment scripts
-tests/ # Automated tests
-docker/ # Dockerfile & entrypoint for containerized deployment
-docker-compose.yml # Launch local blockchain and deployer container
-README.md
+AuthorizationManager Contract: Validates withdrawal authorizations originating from off-chain coordination.
 
-markdown
-Copy code
+The system ensures that:
 
-## Features
+Withdrawals occur only with valid authorizations.
 
-- Vault contract holds and transfers funds.
-- Authorization manager validates withdrawal permissions.
-- Deposits, withdrawals, and authorization consumption are fully tracked with events.
-- Ensures each authorization is consumed exactly once.
-- Fully testable on a local Hardhat blockchain.
+Authorizations cannot be reused.
 
-## Local Setup
+Deposits and withdrawals are observable via events.
 
-1. Install Node.js and npm.
-2. Run `npm install` to install dependencies.
-3. Start local blockchain:
+State updates happen exactly once per authorization.
 
-```bash
-npx hardhat node
-Deploy contracts:
+Repository Structure
+/
+├─ contracts/
+│  ├─ SecureVault.sol
+│  └─ AuthorizationManager.sol
+├─ scripts/
+│  └─ deploy.js
+├─ tests/
+│  └─ vault.test.js
+├─ docker/
+│  ├─ Dockerfile
+│  └─ entrypoint.sh
+├─ docker-compose.yml
+├─ package.json
+├─ package-lock.json
+├─ hardhat.config.ts
+├─ tsconfig.json
+└─ README.md
 
-bash
-Copy code
+Phase 1: Project Initialization
+
+Create a GitHub repository:
+
+git init
+git remote add origin https://github.com/Divyasrirowtu/secure-vault.git
+
+
+Create project structure:
+
+mkdir contracts scripts tests docker
+New-Item README.md
+New-Item docker-compose.yml
+
+
+Open project in VS Code:
+
+code .
+
+Phase 2: Hardhat Setup
+
+Initialize Hardhat:
+
+npx hardhat --init
+
+
+Select TypeScript project with Node Test Runner and Viem (or minimal if preferred).
+
+Accept defaults for other prompts.
+
+Install dependencies:
+
+npm install
+
+Phase 3: Contracts Implementation
+AuthorizationManager.sol
+
+Tracks used authorizations.
+
+Verifies each withdrawal is valid and unique.
+
+SecureVault.sol
+
+Holds Ether deposits.
+
+Requests authorization from AuthorizationManager before withdrawals.
+
+Emits events for deposits and withdrawals.
+
+Compile contracts:
+
+npx hardhat compile
+
+Phase 4: Deployment Script
+scripts/deploy.js
+
+Deploys AuthorizationManager first.
+
+Deploys SecureVault with the authorization manager’s address.
+
+Logs deployed addresses.
+
+Deploy locally:
+
 npx hardhat run scripts/deploy.js --network localhost
-Docker Setup (Optional)
-bash
-Copy code
+
+Phase 5: Docker Setup
+Dockerfile
+
+Installs dependencies, copies project files, runs entrypoint.sh.
+
+entrypoint.sh
+
+Waits for blockchain container to start.
+
+Runs deployment script automatically.
+
+docker-compose.yml
+
+Starts local blockchain (anvil / alternative Ethereum node).
+
+Builds deployer container.
+
+Run Docker deployment:
+
 docker-compose up --build
-This will start a local blockchain and deploy contracts automatically.
 
-yaml
-Copy code
 
----
+⚠️ On Windows, if GHCR fails, run Hardhat node locally instead:
 
-✅ After creating these two files, your **Step 1 setup is fully complete**:  
+npx hardhat node
+npx hardhat run scripts/deploy.js --network localhost
 
-- Project folder structure exists  
-- GitHub repo linked and pushed  
-- Basic Docker support defined  
-- README explains project setup  
+Phase 6: Automated Tests
+tests/vault.test.js
 
----
+Test deposits.
+
+Test withdrawals with valid authorizations.
+
+Ensure authorizations cannot be reused.
+
+Run tests:
+
+npx hardhat test
+
+Phase 7: Manual Validation / README Documentation
+Manual Flow
+
+Start local blockchain
+
+npx hardhat node
+
+
+Deploy contracts
+
+npx hardhat run scripts/deploy.js --network localhost
+
+
+Deposit funds
+
+const vault = await ethers.getContractAt("SecureVault", "VAULT_ADDRESS");
+await owner.sendTransaction({ to: vault.address, value: ethers.utils.parseEther("1") });
+
+
+Generate unique authorization
+
+const authId = ethers.utils.formatBytes32String("AUTH1");
+
+
+Withdraw funds
+
+await vault.withdraw("RECIPIENT_ADDRESS", ethers.utils.parseEther("1"), authId);
+
+
+Observe events
+
+Deposit(sender, amount)
+
+Withdrawal(recipient, amount)
+
+AuthorizationUsed(authId)
+
+Reuse prevention
+
+Reusing the same authId reverts with "Authorization already used".
+
+Notes
+
+All phases are reproducible locally.
+
+No frontend or public blockchain deployment required.
+
+Designed for secure multi-contract authorization flow.
